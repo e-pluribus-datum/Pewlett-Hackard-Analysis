@@ -28,16 +28,16 @@ SELECT
 	em.emp_no, em.first_name, em.last_name, em.birth_date,
 	de.from_date, de.to_date,
 	ti.title
--- INTO mentorship_eligibility
+INTO mentorship_eligibility
 FROM employees as em
 	INNER JOIN dept_emp	as de
 	ON em.emp_no = de.emp_no
 	INNER JOIN 	-- first filter titles to yield the most recent title for each employee
 				-- simply 'INNER JOIN titles as ti' gives inconsistent results!
-			(SELECT DISTINCT ON(emp_no) emp_no, title, max(from_date), max(to_date)
-			FROM titles as ti
-			GROUP BY emp_no, title
-			ORDER BY emp_no ASC, max(to_date) DESC, max(from_date) DESC)
+		(SELECT DISTINCT ON(emp_no) emp_no, title, max(from_date), max(to_date)
+		FROM titles as ti
+		GROUP BY emp_no, title
+		ORDER BY emp_no ASC, max(to_date) DESC, max(from_date) DESC)
 	as ti
 	ON em.emp_no = ti.emp_no
 WHERE de.to_date = '9999-01-01' 	-- active employees
